@@ -1,84 +1,113 @@
-# OpenTelemetry Helm Charts
+# Log10x OpenTelemetry Helm Charts
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/opentelemetry-helm)](https://artifacthub.io/packages/search?repo=opentelemetry-helm)
+[![Release Status](https://github.com/log-10x/opentelemetry-helm-charts/actions/workflows/release.yaml/badge.svg?branch=main)](https://github.com/log-10x/opentelemetry-helm-charts/actions/workflows/release.yaml)
 
-This repository contains [Helm](https://helm.sh/) charts for OpenTelemetry project.
+Helm charts for deploying OpenTelemetry Collector with an [10x Edge app](https://doc.log10x.com/apps/edge)
+
+The OpenTelemetry Collector charts are built on top of the official [opentelemetry helm charts](https://github.com/open-telemetry/opentelemetry-helm-charts), and work by deploying a Log10x sidecar alongside the collector for log optimization.
+
+For more details on how the images are created, see the [docker-images repo](https://github.com/log-10x/docker-images).
+
+The supported [10x distributions](https://doc.log10x.com/architecture/flavors/) are JIT Edge and Native Edge. Check out each individual chart values.yaml for full configuration options.
 
 ## Usage
 
-[Helm](https://helm.sh) must be installed to use the charts.
-Please refer to Helm's [documentation](https://helm.sh/docs/) to get started.
+[Helm](https://helm.sh) must be installed to use these charts; please refer to the _Helm_ [documentation](https://helm.sh/docs/) to get started.
 
-Once Helm is set up properly, add the repo as follows:
+### OCI Repository (Recommended)
 
-```console
-helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+Install directly from the OCI registry:
+
+```shell
+# Install opentelemetry-collector
+helm install my-collector oci://ghcr.io/log-10x/opentelemetry-helm-charts/opentelemetry-collector
+
+# Install a specific version
+helm install my-collector oci://ghcr.io/log-10x/opentelemetry-helm-charts/opentelemetry-collector --version 0.2.1
+
+# Show chart info and available versions
+helm show all oci://ghcr.io/log-10x/opentelemetry-helm-charts/opentelemetry-collector
 ```
 
-## Helm Charts
+No `helm repo add` required - OCI pulls directly from the registry.
 
-You can then run `helm search repo open-telemetry` to see the charts.
+### Helm Repository (Alternative)
 
-### OpenTelemetry Collector
+Add the Helm repository:
 
-The chart can be used to install [OpenTelemetry Collector](https://github.com/open-telemetry/opentelemetry-collector)
-in a Kubernetes cluster. More detailed documentation can be found in
-[OpenTelemetry Collector chart directory](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/charts/opentelemetry-collector).
+```shell
+helm repo add log10x-otel https://log-10x.github.io/opentelemetry-helm-charts
+helm repo update
+helm search repo log10x-otel
+```
 
-### OpenTelemetry Demo
+Then install:
 
-The chart can be used to install [OpenTelemetry Demo](https://github.com/open-telemetry/opentelemetry-demo)
-in a Kubernetes cluster. More detailed documentation can be found in
-[OpenTelemetry Demo chart directory](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/charts/opentelemetry-demo).
+```shell
+helm install my-collector log10x-otel/opentelemetry-collector
+```
 
-### OpenTelemetry Operator
+## Charts
 
-The chart can be used to install [OpenTelemetry Operator](https://github.com/open-telemetry/opentelemetry-operator)
-in a Kubernetes cluster. More detailed documentation can be found in
-[OpenTelemetry Operator chart directory](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/charts/opentelemetry-operator).
+- [opentelemetry-collector](./charts/opentelemetry-collector/README.md) - OpenTelemetry Collector with Log10x integration
 
-### OpenTelemetry eBPF Instrumentation
+## Log10x Integration
 
-The chart can be used to install [OpenTelemetry eBPF Instrumentation](https://github.com/open-telemetry/opentelemetry-ebpf-instrumentation)
-in a Kubernetes cluster. More detailed documentation can be found in
-[OpenTelemetry eBPF Instrumentation chart directory](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/charts/opentelemetry-ebpf-instrumentation).
+Enable Log10x by setting `tenx.enabled: true` in your values file:
 
-## Contributing
+```yaml
+tenx:
+  enabled: true
+  apiKey: "YOUR-LICENSE-KEY"
+  kind: "regulate"  # Options: report, regulate, optimize
+  runtimeName: "my-otel-collector"
 
-See [CONTRIBUTING.md](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/CONTRIBUTING.md).
+  # Optional: GitOps configuration
+  github:
+    config:
+      enabled: true
+      token: "YOUR-GITHUB-TOKEN"
+      repo: "YOUR-ORG/YOUR-CONFIG-REPO"
+```
 
-### Maintainers
+### Log10x Modes
 
-- [Dmitrii Anoshin](https://github.com/dmitryax), Splunk
-- [Jacob Aronoff](https://github.com/jaronoff97), Lightstep
-- [Tyler Helmuth](https://github.com/TylerHelmuth), Honeycomb
+| Mode | Description |
+|------|-------------|
+| `report` | Analytics-only mode - generates cost and usage metrics without modifying logs |
+| `regulate` | Filtering mode - reduces log volume based on configured rules |
+| `optimize` | Full optimization - reduces log volume while preserving information |
 
-For more information about the maintainer role, see the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#maintainer).
+## Documentation
 
-### Approvers
-
-- [Alex Birca](https://github.com/Allex1), Adobe
-- [Jared Tan](https://github.com/JaredTan95), DaoCloud
-- [Josh Voravong](https://github.com/jvoravong), Splunk
-- [Juliano Costa](https://github.com/julianocosta89), Datadog
-- [Pierre Tessier](https://github.com/puckpuck), Honeycomb
-- [Povilas](https://github.com/povilasv), Coralogix
-
-For more information about the approver role, see the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#approver).
-
-### Emeritus Maintainers
-
-- [Tigran Najaryan](https://github.com/tigrannajaryan)
-
-For more information about the emeritus role, see the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#emeritus-maintainerapprovertriager).
-
-### Emeritus Approvers
-
-- [Naseem K. Ullah](https://github.com/naseemkullah)
-
-For more information about the emeritus role, see the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#emeritus-maintainerapprovertriager).
+- [Log10x Documentation](https://doc.log10x.com)
+- [Edge Reporter Deployment](https://doc.log10x.com/apps/edge/reporter/deploy/)
+- [Edge Regulator Deployment](https://doc.log10x.com/apps/edge/regulator/deploy/)
+- [Edge Optimizer Deployment](https://doc.log10x.com/apps/edge/optimizer/deploy/)
 
 ## License
 
-[Apache 2.0 License](https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/LICENSE).
+This repository is licensed under the [Apache License 2.0](LICENSE).
+
+### Important: Log10x Product License Required
+
+This repository contains deployment tooling for Log10x with OpenTelemetry. While the tooling
+itself is open source, **using Log10x requires a commercial license**.
+
+| Component | License |
+|-----------|---------|
+| This repository (Helm charts) | Apache 2.0 (open source) |
+| Log10x engine and runtime | Commercial license required |
+
+**What this means:**
+
+- You can freely use, modify, and distribute these Helm charts
+- The Log10x software that these charts deploy requires a paid subscription
+- A valid Log10x API key is required to run the deployed software
+
+**Get Started:**
+
+- [Log10x Pricing](https://log10x.com/pricing)
+- [Documentation](https://doc.log10x.com)
+- [Contact Sales](mailto:sales@log10x.com)

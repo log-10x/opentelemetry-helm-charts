@@ -169,9 +169,81 @@ containers:
 {{- if .Values.extraContainers }}
   {{- tpl (toYaml .Values.extraContainers) . | nindent 2 }}
 {{- end }}
-{{- if .Values.initContainers }}
+{{- if .Values.tenx.enabled }}
+  - name: tenx
+    image: "{{ .Values.tenx.image.repository }}:{{ .Values.tenx.image.tag }}"
+    imagePullPolicy: {{ .Values.tenx.image.pullPolicy }}
+    args:
+      - "run"
+      - "@run/input/forwarder/otel-collector/{{ .Values.tenx.kind }}"
+      - "@apps/edge/{{ if eq .Values.tenx.kind "report" }}reporter{{ else if eq .Values.tenx.kind "regulate" }}regulator{{ else }}optimizer{{ end }}"
+    env:
+      - name: TENX_API_KEY
+        value: {{ .Values.tenx.apiKey | quote }}
+      {{- if .Values.tenx.runtimeName }}
+      - name: TENX_RUNTIME_NAME
+        value: {{ .Values.tenx.runtimeName | quote }}
+      {{- end }}
+      {{- if or .Values.tenx.github.config.enabled .Values.tenx.github.symbols.enabled }}
+      - name: TENX_CONFIG
+        value: "/etc/tenx/git/config"
+      {{- end }}
+      {{- if .Values.tenx.github.symbols.enabled }}
+      - name: TENX_SYMBOLS_PATH
+        value: "/etc/tenx/git/symbols"
+      {{- end }}
+    resources:
+      {{- toYaml .Values.tenx.resources | nindent 6 }}
+    volumeMounts:
+      - name: tenx-sockets
+        mountPath: /tmp
+      {{- if or .Values.tenx.github.config.enabled .Values.tenx.github.symbols.enabled }}
+      - name: tenx-git
+        mountPath: /etc/tenx/git
+      {{- end }}
+{{- end }}
+{{- if or .Values.initContainers (and .Values.tenx.enabled (or .Values.tenx.github.config.enabled .Values.tenx.github.symbols.enabled)) }}
 initContainers:
+{{- if .Values.initContainers }}
   {{- tpl (toYaml .Values.initContainers) . | nindent 2 }}
+{{- end }}
+{{- if and .Values.tenx.enabled (or .Values.tenx.github.config.enabled .Values.tenx.github.symbols.enabled) }}
+  - name: tenx-github-fetcher
+    image: "{{ .Values.tenx.github.image.repository }}:{{ .Values.tenx.github.image.tag }}"
+    imagePullPolicy: {{ .Values.tenx.github.image.pullPolicy }}
+    env:
+      {{- if .Values.tenx.github.config.enabled }}
+      - name: CONFIG_ENABLED
+        value: "true"
+      - name: CONFIG_TOKEN
+        value: {{ .Values.tenx.github.config.token | quote }}
+      - name: CONFIG_REPO
+        value: {{ .Values.tenx.github.config.repo | quote }}
+      {{- if .Values.tenx.github.config.branch }}
+      - name: CONFIG_BRANCH
+        value: {{ .Values.tenx.github.config.branch | quote }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.tenx.github.symbols.enabled }}
+      - name: SYMBOLS_ENABLED
+        value: "true"
+      - name: SYMBOLS_TOKEN
+        value: {{ .Values.tenx.github.symbols.token | quote }}
+      - name: SYMBOLS_REPO
+        value: {{ .Values.tenx.github.symbols.repo | quote }}
+      {{- if .Values.tenx.github.symbols.branch }}
+      - name: SYMBOLS_BRANCH
+        value: {{ .Values.tenx.github.symbols.branch | quote }}
+      {{- end }}
+      {{- if .Values.tenx.github.symbols.path }}
+      - name: SYMBOLS_PATH
+        value: {{ .Values.tenx.github.symbols.path | quote }}
+      {{- end }}
+      {{- end }}
+    volumeMounts:
+      - name: tenx-git
+        mountPath: /etc/tenx/git
+{{- end }}
 {{- end }}
 {{- if .Values.priorityClassName }}
 priorityClassName: {{ .Values.priorityClassName | quote }}
@@ -207,6 +279,14 @@ volumes:
     hostPath:
       path: /
   {{- end }}
+{{- if .Values.tenx.enabled }}
+  - name: tenx-sockets
+    emptyDir: {}
+  {{- if or .Values.tenx.github.config.enabled .Values.tenx.github.symbols.enabled }}
+  - name: tenx-git
+    emptyDir: {}
+  {{- end }}
+{{- end }}
   {{- if .Values.extraVolumes }}
   {{- tpl (toYaml .Values.extraVolumes) . | nindent 2 }}
   {{- end }}

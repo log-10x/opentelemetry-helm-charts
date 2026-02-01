@@ -251,6 +251,83 @@ image:
   digest: ""
 imagePullSecrets: []
 
+# =============================================================================
+# Log10x Integration
+# =============================================================================
+# Log10x runs as a sidecar container alongside the OpenTelemetry Collector,
+# processing logs via Unix domain sockets for report, regulate, or optimize modes.
+# For more information, see: http://doc.log10x.com/
+tenx:
+  # Main switch to enable/disable Log10x sidecar
+  enabled: false
+
+  # Log10x image configuration
+  image:
+    repository: "ghcr.io/log-10x/pipeline-10x"
+    tag: "0.2.1"
+    pullPolicy: "IfNotPresent"
+
+  # Specify your Log10x API key
+  apiKey: ""
+
+  # Log10x mode - "report", "regulate", or "optimize"
+  # - report: Read-only metrics aggregation, logs pass through to final destination
+  # - regulate: Filter/drop logs based on rules, reduced logs sent to destination
+  # - optimize: 10x-encode logs for maximum compression
+  kind: "regulate"
+
+  # Specify name for the Log10x runtime
+  # If empty, will use default from Log10x configuration
+  runtimeName: ""
+
+  # Unix socket paths for OTel Collector <-> Log10x communication
+  sockets:
+    # Socket where OTel Collector sends logs TO Log10x (syslog exporter)
+    input: "/tmp/tenx-otel-in.sock"
+    # Socket where Log10x sends processed logs BACK to OTel Collector (fluentforward)
+    output: "/tmp/tenx-otel-out.sock"
+
+  # Resource limits for Log10x sidecar container
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # Control fetching Log10x config and/or symbols from GitHub.
+  # If enabled, an init container will fetch config/symbols before the pod starts.
+  # To learn more, see: http://doc.log10x.com/architecture/gitops
+  github:
+    # GitHub config fetcher image
+    image:
+      repository: "ghcr.io/log-10x/github-config-fetcher"
+      tag: "latest"
+      pullPolicy: "IfNotPresent"
+
+    config:
+      # If enabled, fetch Log10x configuration from GitHub
+      enabled: false
+      # GitHub personal access token
+      token: ""
+      # Repository in format "owner/repo"
+      repo: ""
+      # Optional branch (defaults to repo's default branch)
+      # branch: "main"
+
+    symbols:
+      # If enabled, fetch symbol libraries from GitHub
+      enabled: false
+      # GitHub personal access token
+      token: ""
+      # Repository in format "owner/repo"
+      repo: ""
+      # Optional branch
+      # branch: "main"
+      # Optional path within repo
+      # path: "symbols"
+
 # OpenTelemetry Collector executable
 command:
   name: ""
