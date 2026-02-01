@@ -1,15 +1,22 @@
 apiVersion: v2
 name: opentelemetry-collector
-version: 0.144.0
-description: OpenTelemetry Collector Helm chart for Kubernetes
+version: 0.2.1
+description: Log10x enhanced OpenTelemetry Collector Helm chart for Kubernetes
 type: application
-home: https://opentelemetry.io/
+home: https://github.com/log-10x/opentelemetry-helm-charts
 sources:
+  - https://github.com/log-10x/opentelemetry-helm-charts
   - https://github.com/open-telemetry/opentelemetry-collector
   - https://github.com/open-telemetry/opentelemetry-collector-contrib
 maintainers:
-  - name: dmitryax
-  - name: jaronoff97
-  - name: TylerHelmuth
-icon: https://opentelemetry.io/img/logos/opentelemetry-logo-nav.png
+  - name: Log10x
+    email: engineering@log10x.com
+icon: https://raw.githubusercontent.com/log-10x/opentelemetry-helm-charts/main/icon.png
 appVersion: 0.144.0
+keywords:
+  - opentelemetry
+  - otel-collector
+  - log10x
+  - logging
+  - observability
+  - log-optimization

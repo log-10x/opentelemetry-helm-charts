@@ -1278,6 +1278,170 @@
     },
     "shareProcessNamespace": {
       "type": "boolean"
+    },
+    "tenx": {
+      "type": "object",
+      "description": "Log10x sidecar configuration for log optimization",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable Log10x sidecar container"
+        },
+        "image": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "repository": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            },
+            "pullPolicy": {
+              "type": "string",
+              "enum": [
+                "IfNotPresent",
+                "Always",
+                "Never"
+              ]
+            }
+          }
+        },
+        "apiKey": {
+          "type": "string",
+          "description": "Log10x API key"
+        },
+        "kind": {
+          "type": "string",
+          "description": "Log10x processing mode",
+          "enum": [
+            "report",
+            "regulate",
+            "optimize"
+          ]
+        },
+        "runtimeName": {
+          "type": "string",
+          "description": "Name for the Log10x runtime"
+        },
+        "sockets": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "input": {
+              "type": "string",
+              "description": "Socket path for OTel -> Log10x communication"
+            },
+            "output": {
+              "type": "string",
+              "description": "Socket path for Log10x -> OTel communication"
+            }
+          }
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "limits": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "type": [
+                    "string",
+                    "integer"
+                  ]
+                },
+                "memory": {
+                  "type": "string"
+                }
+              }
+            },
+            "requests": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "type": [
+                    "string",
+                    "integer"
+                  ]
+                },
+                "memory": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "github": {
+          "type": "object",
+          "description": "GitHub config fetcher settings",
+          "additionalProperties": false,
+          "properties": {
+            "image": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "repository": {
+                  "type": "string"
+                },
+                "tag": {
+                  "type": "string"
+                },
+                "pullPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "IfNotPresent",
+                    "Always",
+                    "Never"
+                  ]
+                }
+              }
+            },
+            "config": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "token": {
+                  "type": "string"
+                },
+                "repo": {
+                  "type": "string"
+                },
+                "branch": {
+                  "type": "string"
+                }
+              }
+            },
+            "symbols": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "token": {
+                  "type": "string"
+                },
+                "repo": {
+                  "type": "string"
+                },
+                "branch": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "required": [
