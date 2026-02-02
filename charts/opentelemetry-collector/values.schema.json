@@ -1375,6 +1375,21 @@
             }
           }
         },
+        "securityContext": {
+          "type": "object",
+          "description": "Security context for Log10x sidecar container",
+          "additionalProperties": false,
+          "properties": {
+            "runAsUser": {
+              "type": "integer",
+              "description": "UID to run the container as"
+            },
+            "runAsGroup": {
+              "type": "integer",
+              "description": "GID to run the container as"
+            }
+          }
+        },
         "github": {
           "type": "object",
           "description": "GitHub config fetcher settings",

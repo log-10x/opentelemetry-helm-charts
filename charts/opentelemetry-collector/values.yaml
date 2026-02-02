@@ -296,6 +296,12 @@ tenx:
       cpu: 100m
       memory: 128Mi
 
+  # Security context for Log10x sidecar container
+  # Default UID 10001 matches otel-collector-contrib's default user for Unix socket compatibility
+  securityContext:
+    runAsUser: 10001
+    runAsGroup: 10001
+
   # Control fetching Log10x config and/or symbols from GitHub.
   # If enabled, an init container will fetch config/symbols before the pod starts.
   # To learn more, see: http://doc.log10x.com/architecture/gitops

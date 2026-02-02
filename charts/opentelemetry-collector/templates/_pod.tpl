@@ -163,6 +163,10 @@ containers:
         readOnly: true
         mountPropagation: HostToContainer
       {{- end }}
+      {{- if .Values.tenx.enabled }}
+      - name: tenx-sockets
+        mountPath: /tmp
+      {{- end }}
       {{- if .Values.extraVolumeMounts }}
       {{- tpl (toYaml .Values.extraVolumeMounts) . | nindent 6 }}
       {{- end }}
@@ -173,10 +177,19 @@ containers:
   - name: tenx
     image: "{{ .Values.tenx.image.repository }}:{{ .Values.tenx.image.tag }}"
     imagePullPolicy: {{ .Values.tenx.image.pullPolicy }}
+    securityContext:
+      runAsUser: {{ .Values.tenx.securityContext.runAsUser | default 10001 }}
+      runAsGroup: {{ .Values.tenx.securityContext.runAsGroup | default 10001 }}
     args:
       - "run"
       - "@run/input/forwarder/otel-collector/{{ .Values.tenx.kind }}"
       - "@apps/edge/{{ if eq .Values.tenx.kind "report" }}reporter{{ else if eq .Values.tenx.kind "regulate" }}regulator{{ else }}optimizer{{ end }}"
+      - "otelCollectorInputPath"
+      - "{{ .Values.tenx.sockets.input }}"
+      {{- if ne .Values.tenx.kind "report" }}
+      - "otelCollectorOutputForwardAddress"
+      - "{{ .Values.tenx.sockets.output }}"
+      {{- end }}
     env:
       - name: TENX_API_KEY
         value: {{ .Values.tenx.apiKey | quote }}

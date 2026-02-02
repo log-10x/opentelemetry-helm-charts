@@ -110,6 +110,9 @@ Build config file for daemonset OpenTelemetry Collector
 {{- if .Values.presets.clusterMetrics.enabled }}
 {{- $config = (include "opentelemetry-collector.applyClusterMetricsConfig" (dict "Values" $data "config" $config) | fromYaml) }}
 {{- end }}
+{{- if .Values.tenx.enabled }}
+{{- $config = (include "opentelemetry-collector.applyTenxConfig" (dict "Values" $data "config" $config) | fromYaml) }}
+{{- end }}
 {{- tpl (toYaml $config) . }}
 {{- end }}
 
@@ -140,6 +143,9 @@ Build config file for deployment OpenTelemetry Collector
 {{- end }}
 {{- if .Values.presets.clusterMetrics.enabled }}
 {{- $config = (include "opentelemetry-collector.applyClusterMetricsConfig" (dict "Values" $data "config" $config) | fromYaml) }}
+{{- end }}
+{{- if .Values.tenx.enabled }}
+{{- $config = (include "opentelemetry-collector.applyTenxConfig" (dict "Values" $data "config" $config) | fromYaml) }}
 {{- end }}
 {{- tpl (toYaml $config) . }}
 {{- end }}
@@ -458,4 +464,32 @@ extensions:
     auth_type: serviceAccount
     lease_name: {{ .leaseName }}
     lease_namespace: {{ .leaseNamespace }}
+{{- end }}
+
+{{/*
+Apply Log10x sidecar configuration - adds syslog exporter and fluentforward receiver
+*/}}
+{{- define "opentelemetry-collector.applyTenxConfig" -}}
+{{- $config := mustMergeOverwrite (include "opentelemetry-collector.tenxConfig" .Values | fromYaml) .config }}
+{{- if ne .Values.Values.tenx.kind "report" }}
+{{- $_ := set $config.service.pipelines "logs/from-tenx" (dict "receivers" (list "fluentforward/tenx") "processors" (list "batch") "exporters" ($config.service.pipelines.logs.exporters | default (list "debug"))) }}
+{{- end }}
+{{- $_ := set $config.service.pipelines "logs/to-tenx" (dict "receivers" ($config.service.pipelines.logs.receivers | default (list "otlp")) "processors" (list "batch") "exporters" (list "syslog/tenx")) }}
+{{- $config | toYaml }}
+{{- end }}
+
+{{- define "opentelemetry-collector.tenxConfig" -}}
+receivers:
+  {{- if ne .Values.tenx.kind "report" }}
+  fluentforward/tenx:
+    endpoint: unix://{{ .Values.tenx.sockets.output }}
+  {{- end }}
+exporters:
+  syslog/tenx:
+    endpoint: {{ .Values.tenx.sockets.input }}
+    network: unix
+    protocol: rfc5424
+    enable_octet_counting: false
+    tls:
+      insecure: true
 {{- end }}
