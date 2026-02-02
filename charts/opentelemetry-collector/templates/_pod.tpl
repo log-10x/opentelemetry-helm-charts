@@ -177,6 +177,9 @@ containers:
   - name: tenx
     image: "{{ .Values.tenx.image.repository }}:{{ .Values.tenx.image.tag }}"
     imagePullPolicy: {{ .Values.tenx.image.pullPolicy }}
+    securityContext:
+      runAsUser: {{ .Values.tenx.securityContext.runAsUser | default 10001 }}
+      runAsGroup: {{ .Values.tenx.securityContext.runAsGroup | default 10001 }}
     args:
       - "run"
       - "@run/input/forwarder/otel-collector/{{ .Values.tenx.kind }}"
