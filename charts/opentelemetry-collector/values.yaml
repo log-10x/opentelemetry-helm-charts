@@ -256,7 +256,7 @@ imagePullSecrets: []
 # =============================================================================
 # Log10x runs as a sidecar container alongside the OpenTelemetry Collector,
 # processing logs via Unix domain sockets for report, regulate, or optimize modes.
-# For more information, see: http://doc.log10x.com/
+# For more information, see: https://doc.log10x.com/
 tenx:
   # Main switch to enable/disable Log10x sidecar
   enabled: false
@@ -304,7 +304,7 @@ tenx:
 
   # Control fetching Log10x config and/or symbols from GitHub.
   # If enabled, an init container will fetch config/symbols before the pod starts.
-  # To learn more, see: http://doc.log10x.com/architecture/gitops
+  # To learn more, see: https://doc.log10x.com/architecture/gitops
   github:
     # GitHub config fetcher image
     image:
