@@ -3,6 +3,32 @@ entries:
   opentelemetry-collector:
   - apiVersion: v2
     appVersion: 0.144.0
+    created: "2026-03-06T18:03:52.236087367Z"
+    description: Log10x enhanced OpenTelemetry Collector Helm chart for Kubernetes
+    digest: ec71394866531bf279fed5a39d30c14854cb93249f92cabeb2be3aa820ea2636
+    home: https://github.com/log-10x/opentelemetry-helm-charts
+    icon: https://raw.githubusercontent.com/log-10x/opentelemetry-helm-charts/main/icon.png
+    keywords:
+    - opentelemetry
+    - otel-collector
+    - log10x
+    - logging
+    - observability
+    - log-optimization
+    maintainers:
+    - email: engineering@log10x.com
+      name: Log10x
+    name: opentelemetry-collector
+    sources:
+    - https://github.com/log-10x/opentelemetry-helm-charts
+    - https://github.com/open-telemetry/opentelemetry-collector
+    - https://github.com/open-telemetry/opentelemetry-collector-contrib
+    type: application
+    urls:
+    - https://github.com/log-10x/opentelemetry-helm-charts/releases/download/opentelemetry-collector-0.9.6/opentelemetry-collector-0.9.6.tgz
+    version: 0.9.6
+  - apiVersion: v2
+    appVersion: 0.144.0
     created: "2026-02-02T17:00:21.064538013Z"
     description: Log10x enhanced OpenTelemetry Collector Helm chart for Kubernetes
     digest: c045ac846df1b5265a05256b1dd69a76ec724e41ac440def194b0628688cb2fd
@@ -215,4 +241,4 @@ entries:
     urls:
     - https://github.com/log-10x/opentelemetry-helm-charts/releases/download/opentelemetry-target-allocator-0.126.10/opentelemetry-target-allocator-0.126.10.tgz
     version: 0.126.10
-generated: "2026-02-02T17:00:21.064550528Z"
+generated: "2026-03-06T18:03:52.236100582Z"
