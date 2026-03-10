@@ -264,7 +264,7 @@ tenx:
   # Log10x image configuration
   image:
     repository: "log10x/pipeline-10x"
-    tag: "0.9.6"
+    tag: "0.9.7"
     pullPolicy: "IfNotPresent"
 
   # Specify your Log10x API key
