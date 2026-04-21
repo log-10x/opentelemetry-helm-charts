@@ -183,7 +183,13 @@ containers:
     args:
       - "run"
       - "@run/input/forwarder/otel-collector/{{ .Values.tenx.kind }}"
-      - "@apps/edge/{{ if eq .Values.tenx.kind "report" }}reporter{{ else if eq .Values.tenx.kind "regulate" }}regulator{{ else }}optimizer{{ end }}"
+      {{- /*
+          Flat-topology app paths (post doc-refactor):
+            edge/reporter  → reporter
+            edge/regulator → regulator
+            edge/optimizer → compiler
+      */}}
+      - "@apps/{{ if eq .Values.tenx.kind "report" }}reporter{{ else if eq .Values.tenx.kind "regulate" }}regulator{{ else }}compiler{{ end }}"
       - "otelCollectorInputPath"
       - "{{ .Values.tenx.sockets.input }}"
       {{- if ne .Values.tenx.kind "report" }}
