@@ -184,12 +184,13 @@ containers:
       - "run"
       - "@run/input/forwarder/otel-collector/{{ .Values.tenx.kind }}"
       {{- /*
-          Flat-topology app paths (post doc-refactor):
-            edge/reporter  → reporter
-            edge/regulator → regulator
-            edge/optimizer → compiler
+          Use the image-bundled edge/ app paths — the pipeline-10x
+          runtime image still ships apps/edge/{reporter,regulator,
+          optimizer}. Switch to flat apps/{reporter,regulator,
+          compiler} once pipeline-10x is rebuilt with the flat
+          module tree.
       */}}
-      - "@apps/{{ if eq .Values.tenx.kind "report" }}reporter{{ else if eq .Values.tenx.kind "regulate" }}regulator{{ else }}compiler{{ end }}"
+      - "@apps/edge/{{ if eq .Values.tenx.kind "report" }}reporter{{ else if eq .Values.tenx.kind "regulate" }}regulator{{ else }}optimizer{{ end }}"
       - "otelCollectorInputPath"
       - "{{ .Values.tenx.sockets.input }}"
       {{- if ne .Values.tenx.kind "report" }}
