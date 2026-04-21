@@ -242,8 +242,12 @@ config:
 alternateConfig: {}
 
 image:
-  # If you want to use the core image `otel/opentelemetry-collector`, you also need to change `command.name` value to `otelcol`.
-  repository: ""
+  # Default to the log10x-repackaged contrib image so `helm install` works
+  # out-of-the-box. If you want the upstream core image
+  # `otel/opentelemetry-collector` instead, override both `repository` and
+  # `command.name = "otelcol"`. An empty `repository` will fail helm
+  # rendering with "'image.repository' must be set".
+  repository: "otel/opentelemetry-collector-contrib"
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
