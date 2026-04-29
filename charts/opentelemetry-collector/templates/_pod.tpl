@@ -181,10 +181,6 @@ containers:
       runAsUser: {{ .Values.tenx.securityContext.runAsUser | default 10001 }}
       runAsGroup: {{ .Values.tenx.securityContext.runAsGroup | default 10001 }}
     args:
-      # Single launch (regulate wrapper + apps/reducer); mode is selected by
-      # env vars below (reducerReadOnly for read-only / non-intervening,
-      # reducerOptimize for losslessly compacted output).
-      # apps/reporter stays dedicated to the bundled fluent-bit DaemonSet path.
       - "run"
       - "@run/input/forwarder/otel-collector/regulate"
       - "@apps/reducer"
@@ -221,16 +217,10 @@ containers:
         value: "/etc/tenx/symbols"
       {{- end }}
       {{- if .Values.tenx.optimize }}
-      # 1.0.7+: optimize is a reducer flag, not a separate app.
-      # The reducer pipeline reads reducerOptimize and flips
-      # encodeObjects on when true.
       - name: reducerOptimize
         value: "true"
       {{- end }}
       {{- if .Values.tenx.readOnly }}
-      # Read-only mode: reducer reads, aggregates, and publishes metrics, but
-      # does NOT write events back to OTel Collector. Replaces the prior
-      # @apps/reporter pairing for non-fluent-bit forwarders.
       - name: reducerReadOnly
         value: "true"
       {{- end }}
