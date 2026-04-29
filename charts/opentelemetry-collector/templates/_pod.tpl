@@ -181,24 +181,17 @@ containers:
       runAsUser: {{ .Values.tenx.securityContext.runAsUser | default 10001 }}
       runAsGroup: {{ .Values.tenx.securityContext.runAsGroup | default 10001 }}
     args:
+      # Single launch (regulate wrapper + apps/reducer); mode is selected by
+      # env vars below (reducerReadOnly for read-only / non-intervening,
+      # reducerOptimize for losslessly compacted output).
+      # apps/reporter stays dedicated to the bundled fluent-bit DaemonSet path.
       - "run"
-      {{- if eq .Values.tenx.kind "report" }}
-      - "@run/input/forwarder/otel-collector/report"
-      - "@apps/reporter"
-      {{- else }}
-      # kind=regulate or kind=optimize: both launch the flat apps/reducer
-      # module (1.0.7+, renamed from regulator in 2026-04). apps/edge/optimizer
-      # was removed in 1.0.7 — optimize is now a reducer flag (reducerOptimize
-      # env, below).
       - "@run/input/forwarder/otel-collector/regulate"
       - "@apps/reducer"
-      {{- end }}
       - "otelCollectorInputPath"
       - "{{ .Values.tenx.sockets.input }}"
-      {{- if ne .Values.tenx.kind "report" }}
       - "otelCollectorOutputForwardAddress"
       - "{{ .Values.tenx.sockets.output }}"
-      {{- end }}
     env:
       - name: TENX_API_KEY
       {{- if .Values.tenx.apiKey }}
@@ -227,18 +220,25 @@ containers:
       - name: TENX_SYMBOLS_PATH
         value: "/etc/tenx/symbols"
       {{- end }}
-      {{- if eq .Values.tenx.kind "optimize" }}
+      {{- if .Values.tenx.optimize }}
       # 1.0.7+: optimize is a reducer flag, not a separate app.
       # The reducer pipeline reads reducerOptimize and flips
       # encodeObjects on when true.
       - name: reducerOptimize
         value: "true"
       {{- end }}
+      {{- if .Values.tenx.readOnly }}
+      # Read-only mode: reducer reads, aggregates, and publishes metrics, but
+      # does NOT write events back to OTel Collector. Replaces the prior
+      # @apps/reporter pairing for non-fluent-bit forwarders.
+      - name: reducerReadOnly
+        value: "true"
+      {{- end }}
     resources:
       {{- toYaml .Values.tenx.resources | nindent 6 }}
     livenessProbe:
       exec:
-        command: ["pgrep", "-f", "tenx run"]
+        command: ["test", "-S", "{{ .Values.tenx.sockets.input }}"]
       initialDelaySeconds: 30
       periodSeconds: 10
       failureThreshold: 3
