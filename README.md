@@ -60,8 +60,13 @@ Enable Log10x by setting `tenx.enabled: true` in your values file:
 tenx:
   enabled: true
   apiKey: "YOUR-LICENSE-KEY"
-  kind: "regulate"  # Options: report, regulate, optimize
   runtimeName: "my-otel-collector"
+
+  # Mode: leave both flags false for filter mode (default).
+  # optimize: true   -> losslessly compact surviving events for ~50-65% volume reduction
+  # readOnly: true   -> non-intervening reporter (metrics only, logs flow through unchanged)
+  optimize: false
+  readOnly: false
 
   # Optional: GitOps configuration
   github:
@@ -73,17 +78,16 @@ tenx:
 
 ### Log10x Modes
 
-| Mode | Description |
-|------|-------------|
-| `report` | Analytics-only mode - generates cost and usage metrics without modifying logs |
-| `regulate` | Filtering mode - reduces log volume based on configured rules |
-| `optimize` | Full optimization - reduces log volume while preserving information |
+| Mode | Flag | Description |
+|------|------|-------------|
+| Filter | (default, no flag) | Receiver filters event volume based on cost-aware sampling and budget rules |
+| Optimize | `tenx.optimize: true` | Receiver filters AND losslessly compacts surviving events |
+| Read-only | `tenx.readOnly: true` | Receiver observes only - publishes cost metrics without modifying logs |
 
 ## Documentation
 
 - [Log10x Documentation](https://doc.log10x.com)
-- [Reporter Deployment](https://doc.log10x.com/apps/reporter/deploy/)
-- [Reducer Deployment](https://doc.log10x.com/apps/reducer/deploy/)
+- [Receiver Deployment](https://doc.log10x.com/apps/receiver/deploy/)
 
 ## License
 
