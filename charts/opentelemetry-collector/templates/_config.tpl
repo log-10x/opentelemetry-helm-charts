@@ -471,7 +471,7 @@ Apply Log10x sidecar configuration - adds syslog exporter and fluentforward rece
 */}}
 {{- define "opentelemetry-collector.applyTenxConfig" -}}
 {{- $config := mustMergeOverwrite (include "opentelemetry-collector.tenxConfig" .Values | fromYaml) .config }}
-{{- if ne .Values.Values.tenx.kind "report" }}
+{{- if not .Values.Values.tenx.readOnly }}
 {{- $_ := set $config.service.pipelines "logs/from-tenx" (dict "receivers" (list "fluentforward/tenx") "processors" (list "batch") "exporters" ($config.service.pipelines.logs.exporters | default (list "debug"))) }}
 {{- end }}
 {{- $_ := set $config.service.pipelines "logs/to-tenx" (dict "receivers" ($config.service.pipelines.logs.receivers | default (list "otlp")) "processors" (list "batch") "exporters" (list "syslog/tenx")) }}
@@ -480,7 +480,7 @@ Apply Log10x sidecar configuration - adds syslog exporter and fluentforward rece
 
 {{- define "opentelemetry-collector.tenxConfig" -}}
 receivers:
-  {{- if ne .Values.tenx.kind "report" }}
+  {{- if not .Values.tenx.readOnly }}
   fluentforward/tenx:
     endpoint: unix://{{ .Values.tenx.sockets.output }}
   {{- end }}
