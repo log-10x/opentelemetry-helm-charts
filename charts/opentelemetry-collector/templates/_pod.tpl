@@ -189,15 +189,8 @@ containers:
       - "otelCollectorOutputForwardAddress"
       - "{{ .Values.tenx.sockets.output }}"
     env:
-      - name: TENX_API_KEY
-      {{- if .Values.tenx.apiKey }}
-        valueFrom:
-          secretKeyRef:
-            name: {{ include "opentelemetry-collector.fullname" . }}-tenx-api-key
-            key: api-key
-      {{- else }}
-        value: ""
-      {{- end }}
+      - name: TENX_LICENSE_FILE
+        value: /etc/tenx/license/license.jwt
       {{- if .Values.tenx.runtimeName }}
       - name: TENX_RUNTIME_NAME
         value: {{ .Values.tenx.runtimeName | quote }}
@@ -235,6 +228,9 @@ containers:
     volumeMounts:
       - name: tenx-sockets
         mountPath: /tmp
+      - name: tenx-license
+        mountPath: /etc/tenx/license
+        readOnly: true
       {{- if or .Values.tenx.config.git.enabled .Values.tenx.symbols.git.enabled }}
       - name: tenx-git
         mountPath: /etc/tenx/git
@@ -326,6 +322,12 @@ volumes:
 {{- if .Values.tenx.enabled }}
   - name: tenx-sockets
     emptyDir: {}
+  - name: tenx-license
+    secret:
+      secretName: {{ default (printf "%s-tenx-license" (include "opentelemetry-collector.fullname" .)) .Values.tenx.licenseSecret }}
+      items:
+        - key: license-jwt
+          path: license.jwt
   {{- if or .Values.tenx.config.git.enabled .Values.tenx.symbols.git.enabled }}
   - name: tenx-git
     emptyDir: {}
