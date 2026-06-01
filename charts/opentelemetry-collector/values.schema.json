@@ -1308,9 +1308,13 @@
             }
           }
         },
-        "apiKey": {
+        "licenseJwt": {
           "type": "string",
-          "description": "Log10x API key"
+          "description": "Log10x license JWT (the chart creates a managed Secret from it). Mutually exclusive with `licenseSecret`."
+        },
+        "licenseSecret": {
+          "type": "string",
+          "description": "Name of an existing K8s Secret with key `license-jwt`. Mutually exclusive with `licenseJwt`."
         },
         "optimize": {
           "type": "boolean",
@@ -1323,6 +1327,10 @@
         "runtimeName": {
           "type": "string",
           "description": "Name for the Log10x runtime"
+        },
+        "airgapped": {
+          "type": "boolean",
+          "description": "Run the 10x engine airgapped — license verified locally, no outbound calls to the 10x SaaS gateway (no startup validation, no metrics reporting, no user-attribute enrichment). 'demo' and 'limited' license types cannot run airgapped and will warn + fall back to online."
         },
         "sockets": {
           "type": "object",

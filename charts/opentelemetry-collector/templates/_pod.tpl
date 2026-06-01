@@ -191,6 +191,10 @@ containers:
     env:
       - name: TENX_LICENSE_FILE
         value: /etc/tenx/license/license.jwt
+      {{- if .Values.tenx.airgapped }}
+      - name: TENX_AIRGAPPED
+        value: "true"
+      {{- end }}
       {{- if .Values.tenx.runtimeName }}
       - name: TENX_RUNTIME_NAME
         value: {{ .Values.tenx.runtimeName | quote }}
