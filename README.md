@@ -5,7 +5,7 @@
 
 Helm charts for deploying OpenTelemetry Collector with an [10x Edge app](https://doc.log10x.com/engine/flavors/#edge)
 
-The OpenTelemetry Collector charts are built on top of the official [opentelemetry helm charts](https://github.com/open-telemetry/opentelemetry-helm-charts), and work by deploying a Log10x sidecar alongside the collector for log optimization.
+The OpenTelemetry Collector charts are built on top of the official [opentelemetry helm charts](https://github.com/open-telemetry/opentelemetry-helm-charts), and work by deploying a [Log10x](https://www.log10x.com/?utm_source=github&utm_medium=readme&utm_campaign=opentelemetry-helm-charts&utm_content=hero) sidecar alongside the collector for log optimization.
 
 For more details on how the images are created, see the [docker-images repo](https://github.com/log-10x/docker-images).
 
