@@ -3,13 +3,13 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Release Status](https://github.com/log-10x/opentelemetry-helm-charts/actions/workflows/release.yaml/badge.svg?branch=main)](https://github.com/log-10x/opentelemetry-helm-charts/actions/workflows/release.yaml)
 
-Helm charts for deploying OpenTelemetry Collector with an [10x Edge app](https://doc.log10x.com/apps/edge)
+Helm charts for deploying OpenTelemetry Collector with an [10x Edge app](https://doc.log10x.com/engine/flavors/#edge)
 
-The OpenTelemetry Collector charts are built on top of the official [opentelemetry helm charts](https://github.com/open-telemetry/opentelemetry-helm-charts), and work by deploying a Log10x sidecar alongside the collector for log optimization.
+The OpenTelemetry Collector charts are built on top of the official [opentelemetry helm charts](https://github.com/open-telemetry/opentelemetry-helm-charts), and work by deploying a [Log10x](https://www.log10x.com/?utm_source=github&utm_medium=readme&utm_campaign=opentelemetry-helm-charts&utm_content=hero) sidecar alongside the collector for log optimization.
 
 For more details on how the images are created, see the [docker-images repo](https://github.com/log-10x/docker-images).
 
-The supported [10x distributions](https://doc.log10x.com/architecture/flavors/) are JIT Edge and Native Edge. Check out each individual chart values.yaml for full configuration options.
+The supported [10x distributions](https://doc.log10x.com/engine/flavors/) are JIT Edge and Native Edge. Check out each individual chart values.yaml for full configuration options.
 
 ## Usage
 
@@ -111,6 +111,6 @@ itself is open source, **using Log10x requires a commercial license**.
 
 **Get Started:**
 
-- [Log10x Pricing](https://log10x.com/pricing)
+- [Log10x Pricing](https://www.log10x.com/pricing?utm_source=github&utm_medium=readme&utm_campaign=opentelemetry-helm-charts&utm_content=footer)
 - [Documentation](https://doc.log10x.com)
 - [Contact Sales](mailto:sales@log10x.com)
