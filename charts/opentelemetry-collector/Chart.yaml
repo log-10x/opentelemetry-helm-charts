@@ -1,0 +1,26 @@
+apiVersion: v2
+name: opentelemetry-collector
+version: 1.0.20
+description: Log10x enhanced OpenTelemetry Collector Helm chart for Kubernetes
+type: application
+# Deprecated: retired. Use the log10x/edge-10x sidecar on the upstream
+# open-telemetry/opentelemetry-collector chart over loopback TCP OTLP/gRPC
+# (https://doc.log10x.com/apps/receiver/deploy/).
+deprecated: true
+home: https://github.com/log-10x/opentelemetry-helm-charts
+sources:
+  - https://github.com/log-10x/opentelemetry-helm-charts
+  - https://github.com/open-telemetry/opentelemetry-collector
+  - https://github.com/open-telemetry/opentelemetry-collector-contrib
+maintainers:
+  - name: Log10x
+    email: engineering@log10x.com
+icon: https://raw.githubusercontent.com/log-10x/opentelemetry-helm-charts/main/icon.png
+appVersion: 0.144.0
+keywords:
+  - opentelemetry
+  - otel-collector
+  - log10x
+  - logging
+  - observability
+  - log-optimization
