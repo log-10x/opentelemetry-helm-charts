@@ -1,93 +1,23 @@
 # Log10x OpenTelemetry Helm Charts
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Release Status](https://github.com/log-10x/opentelemetry-helm-charts/actions/workflows/release.yaml/badge.svg?branch=main)](https://github.com/log-10x/opentelemetry-helm-charts/actions/workflows/release.yaml)
 
-Helm charts for deploying OpenTelemetry Collector with an [10x Edge app](https://doc.log10x.com/engine/flavors/#edge)
+> [!WARNING]
+> **The forked `opentelemetry-collector` 10x chart is retired.**
+>
+> It wired a `log10x/edge-10x` sidecar to the Collector over **unix domain sockets**
+> on a shared `/tmp` emptyDir (`/tmp/tenx-otel-in.sock` / `/tmp/tenx-otel-out.sock`).
+>
+> That fork is no longer used. The OpenTelemetry Collector now runs the 10x Engine as
+> a `log10x/edge-10x` **sidecar container** added to the **official upstream**
+> [`open-telemetry/opentelemetry-collector`](https://github.com/open-telemetry/opentelemetry-helm-charts)
+> chart via a values overlay (`extraContainers`), talking over **loopback TCP**
+> (OTLP/gRPC in, Fluent Forward back).
+>
+> **Use the current [Receiver deployment guide](https://doc.log10x.com/apps/receiver/deploy/) instead.**
 
-The OpenTelemetry Collector charts are built on top of the official [opentelemetry helm charts](https://github.com/open-telemetry/opentelemetry-helm-charts), and work by deploying a [Log10x](https://www.log10x.com/?utm_source=github&utm_medium=readme&utm_campaign=opentelemetry-helm-charts&utm_content=hero) sidecar alongside the collector for log optimization.
-
-For more details on how the images are created, see the [docker-images repo](https://github.com/log-10x/docker-images).
-
-The supported [10x distributions](https://doc.log10x.com/engine/flavors/) are JIT Edge and Native Edge. Check out each individual chart values.yaml for full configuration options.
-
-## Usage
-
-[Helm](https://helm.sh) must be installed to use these charts; please refer to the _Helm_ [documentation](https://helm.sh/docs/) to get started.
-
-### OCI Repository (Recommended)
-
-Install directly from the OCI registry:
-
-```shell
-# Install opentelemetry-collector
-helm install my-collector oci://ghcr.io/log-10x/opentelemetry-helm-charts/opentelemetry-collector
-
-# Install a specific version
-helm install my-collector oci://ghcr.io/log-10x/opentelemetry-helm-charts/opentelemetry-collector --version 1.0.6
-
-# Show chart info and available versions
-helm show all oci://ghcr.io/log-10x/opentelemetry-helm-charts/opentelemetry-collector
-```
-
-No `helm repo add` required - OCI pulls directly from the registry.
-
-### Helm Repository (Alternative)
-
-Add the Helm repository:
-
-```shell
-helm repo add log10x-otel https://log-10x.github.io/opentelemetry-helm-charts
-helm repo update
-helm search repo log10x-otel
-```
-
-Then install:
-
-```shell
-helm install my-collector log10x-otel/opentelemetry-collector
-```
-
-## Charts
-
-- [opentelemetry-collector](./charts/opentelemetry-collector/README.md) - OpenTelemetry Collector with Log10x integration
-
-## Log10x Integration
-
-Enable Log10x by setting `tenx.enabled: true` in your values file:
-
-```yaml
-tenx:
-  enabled: true
-  apiKey: "YOUR-LICENSE-KEY"
-  runtimeName: "my-otel-collector"
-
-  # Mode: leave both flags false for filter mode (default).
-  # optimize: true   -> losslessly compact surviving events for ~50-65% volume reduction
-  # readOnly: true   -> non-intervening reporter (metrics only, logs flow through unchanged)
-  optimize: false
-  readOnly: false
-
-  # Optional: GitOps configuration
-  github:
-    config:
-      enabled: true
-      token: "YOUR-GITHUB-TOKEN"
-      repo: "YOUR-ORG/YOUR-CONFIG-REPO"
-```
-
-### Log10x Modes
-
-| Mode | Flag | Description |
-|------|------|-------------|
-| Filter | (default, no flag) | Receiver filters event volume based on cost-aware sampling and budget rules |
-| Optimize | `tenx.optimize: true` | Receiver filters AND losslessly compacts surviving events |
-| Read-only | `tenx.readOnly: true` | Receiver observes only - publishes cost metrics without modifying logs |
-
-## Documentation
-
-- [Log10x Documentation](https://doc.log10x.com)
-- [Receiver Deployment](https://doc.log10x.com/apps/receiver/deploy/)
+The other charts in this repository (`opentelemetry-demo`, `opentelemetry-operator`,
+`opentelemetry-kube-stack`, etc.) are plain upstream mirrors with no 10x integration.
 
 ## License
 
@@ -95,19 +25,12 @@ This repository is licensed under the [Apache License 2.0](LICENSE).
 
 ### Important: Log10x Product License Required
 
-This repository contains deployment tooling for Log10x with OpenTelemetry. While the tooling
-itself is open source, **using Log10x requires a commercial license**.
+While the tooling itself is open source, **using Log10x requires a commercial license**.
 
 | Component | License |
 |-----------|---------|
 | This repository (Helm charts) | Apache 2.0 (open source) |
 | Log10x engine and runtime | Commercial license required |
-
-**What this means:**
-
-- You can freely use, modify, and distribute these Helm charts
-- The Log10x software that these charts deploy requires a paid subscription
-- A valid Log10x API key is required to run the deployed software
 
 **Get Started:**
 
