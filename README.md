@@ -3,6 +3,18 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Release Status](https://github.com/log-10x/opentelemetry-helm-charts/actions/workflows/release.yaml/badge.svg?branch=main)](https://github.com/log-10x/opentelemetry-helm-charts/actions/workflows/release.yaml)
 
+> [!WARNING]
+> **The forked `opentelemetry-collector` 10x chart is deprecated (kept for reference).** It wires a
+> `log10x/edge-10x` sidecar to the Collector over **unix domain sockets** on a shared `/tmp`
+> emptyDir (`/tmp/tenx-otel-in.sock` / `/tmp/tenx-otel-out.sock`). The current model runs the same
+> sidecar on the **official upstream**
+> [`open-telemetry/opentelemetry-collector`](https://github.com/open-telemetry/opentelemetry-helm-charts)
+> chart via a values overlay (`extraContainers`), over **loopback TCP** (OTLP/gRPC in, Fluent Forward
+> back). See the **[Receiver deployment guide](https://doc.log10x.com/apps/receiver/deploy/)**.
+>
+> The chart remains here and installable, but is marked `deprecated: true` and is no longer
+> maintained or recommended. The other charts in this repo are plain upstream mirrors.
+
 Helm charts for deploying OpenTelemetry Collector with an [10x Edge app](https://doc.log10x.com/engine/flavors/#edge)
 
 The OpenTelemetry Collector charts are built on top of the official [opentelemetry helm charts](https://github.com/open-telemetry/opentelemetry-helm-charts), and work by deploying a [Log10x](https://www.log10x.com/?utm_source=github&utm_medium=readme&utm_campaign=opentelemetry-helm-charts&utm_content=hero) sidecar alongside the collector for log optimization.
