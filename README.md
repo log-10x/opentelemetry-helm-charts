@@ -75,7 +75,7 @@ tenx:
   runtimeName: "my-otel-collector"
 
   # Mode: leave both flags false for filter mode (default).
-  # optimize: true   -> losslessly compact surviving events for ~50-65% volume reduction
+  # optimize: true   -> losslessly compact surviving events
   # readOnly: true   -> non-intervening reporter (metrics only, logs flow through unchanged)
   optimize: false
   readOnly: false
@@ -105,21 +105,21 @@ tenx:
 
 This repository is licensed under the [Apache License 2.0](LICENSE).
 
-### Important: Log10x Product License Required
+### Log10x license
 
-This repository contains deployment tooling for Log10x with OpenTelemetry. While the tooling
-itself is open source, **using Log10x requires a commercial license**.
+This repository contains deployment tooling for Log10x with OpenTelemetry. The tooling
+is open source. The Log10x engine it deploys runs on the built-in Free tier with no license token on up to 10 nodes, with no expiry; above 10 nodes it takes a paid license.
 
 | Component | License |
 |-----------|---------|
 | This repository (Helm charts) | Apache 2.0 (open source) |
-| Log10x engine and runtime | Commercial license required |
+| Log10x engine and runtime | Free tier on up to 10 nodes; paid license above 10 |
 
 **What this means:**
 
 - You can freely use, modify, and distribute these Helm charts
-- The Log10x software that these charts deploy requires a paid subscription
-- A valid Log10x API key is required to run the deployed software
+- The Log10x engine runs with no license token on up to 10 nodes
+- Above 10 nodes, the engine takes a paid license
 
 **Get Started:**
 
